@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#2563EB">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%232563EB'/%3E%3Cpath d='M50 28 L78 40 L50 52 L22 40 Z' fill='%23FFFFFF'/%3E%3Cpath d='M32 46 V64 Q50 74 68 64 V46' fill='none' stroke='%23FFFFFF' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='78' cy='40' r='4' fill='%23FFFFFF'/%3E%3Cline x1='78' y1='40' x2='78' y2='58' stroke='%23FFFFFF' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+<title>Acompanhamento</title>
+<style>
+/* ===== Reset e variáveis ===== */
+* { -webkit-tap-highlight-color: transparent; box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --azul: #2563EB;
+  --verde: #16A34A;
+  --rosa: #EC4899;
+  --acento: #F97316;
+  --destaque: #FBBF24;
+  --fundo: #FFFFFF;
+  --texto: #1F2937;
+  --texto-sec: #6B7280;
+  --borda: #E5E7EB;
+  --cor-aba: var(--azul);
+}
+html, body {
+  background: var(--fundo);
+  color: var(--texto);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-text-size-adjust: 100%;
+}
+button, input, textarea, select { font-family: inherit; font-size: inherit; color: inherit; }
+h1, h2, h3 { font-weight: 600; }
+
+/* ===== Header ===== */
+header.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--fundo);
+  border-bottom: 1px solid var(--borda);
+}
+header.app-header svg { width: 30px; height: 30px; flex-shrink: 0; }
+.header-titulo { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; min-width: 0; }
+.header-titulo span.fixo { font-size: 18px; font-weight: 600; white-space: nowrap; }
+#nomeCrianca {
+  border: none;
+  border-bottom: 1px dashed var(--borda);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--texto);
+  background: transparent;
+  min-width: 60px;
+  max-width: 45vw;
+  padding: 2px 0;
+}
+#nomeCrianca:focus { outline: none; border-bottom-color: var(--azul); }
+
+/* ===== Navegação de abas ===== */
+nav.tabs {
+  position: sticky;
+  top: 55px;
+  z-index: 19;
+  display: flex;
+  background: var(--fundo);
+  border-bottom: 1px solid var(--borda);
+}
+nav.tabs button {
+  flex: 1;
+  min-height: 48px;
+  border: none;
+  background: transparent;
+  color: var(--texto-sec);
+  font-size: 14px;
+  font-weight: 500;
+  border-bottom: 3px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+nav.tabs button.ativa { color: var(--cor-tab); border-bottom-color: var(--cor-tab); }
+nav.tabs button[data-tab="1"] { --cor-tab: var(--azul); }
+nav.tabs button[data-tab="2"] { --cor-tab: var(--verde); }
+nav.tabs button[data-tab="3"] { --cor-tab: var(--rosa); }
+
+/* ===== Conteúdo das abas ===== */
+main { padding: 16px; padding-bottom: 32px; max-width: 900px; margin: 0 auto; }
+.painel-tab { display: none; opacity: 0; transition: opacity 0.2s; }
+.painel-tab.ativo { display: block; opacity: 1; }
+
+.card {
+  background: var(--fundo);
+  border: 1px solid var(--borda);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+.card h2 { font-size: 20px; margin-bottom: 4px; }
+.rotulo { font-size: 13px; font-weight: 500; color: var(--texto-sec); }
+
+/* ===== Seletor de data ===== */
+.seletor-data { display: flex; align-items: center; gap: 8px; }
+.seletor-data button {
+  min-width: 44px; min-height: 44px;
+  border: 1px solid var(--borda);
+  background: var(--fundo);
+  border-radius: 10px;
+  font-size: 18px;
+  color: var(--azul);
+}
+.seletor-data input[type="date"] {
+  flex: 1;
+  min-height: 44px;
+  border: 1px solid var(--borda);
+  border-radius: 10px;
+  padding: 0 10px;
+}
+
+/* ===== Itens do checklist ===== */
+.item-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 4px;
+  min-height: 44px;
+  border-bottom: 1px solid var(--borda);
+  cursor: pointer;
+}
+.item-check:last-child { border-bottom: none; }
+.item-check input[type="checkbox"] {
+  width: 26px; height: 26px;
+  flex-shrink: 0;
+  accent-color: var(--azul);
+  margin-top: 2px;
+}
+.item-check .texto-item strong { display: block; font-size: 15px; font-weight: 600; }
+.item-check .texto-item small { color: var(--texto-sec); font-size: 13px; }
+
+textarea#observacaoDia {
+  width: 100%;
+  border: 1px solid var(--borda);
+  border-radius: 10px;
+  padding: 10px;
+  resize: vertical;
+  min-height: 56px;
+  margin-top: 8px;
+}
+.feedback-salvo {
+  font-size: 13px;
+  color: var(--verde);
+  font-weight: 500;
+  height: 18px;
+  margin-top: 6px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.feedback-salvo.mostrar { opacity: 1; }
+
+/* ===== Painel semanal ===== */
+.linha-item-semana { margin-bottom: 12px; }
+.linha-item-semana .topo-linha {
+  display: flex; justify-content: space-between;
+  font-size: 13px; font-weight: 500; margin-bottom: 4px;
+}
+.barra-fundo {
+  background: var(--borda);
+  border-radius: 8px;
+  height: 10px;
+  overflow: hidden;
+}
+.barra-progresso {
+  height: 100%;
+  background: var(--azul);
+  border-radius: 8px;
+  transition: width 0.3s;
+}
+.faixa-status {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+}
+.faixa-status.boa { background: #DCFCE7; color: #166534; }
+.faixa-status.andamento { background: #F3F4F6; color: var(--texto-sec); }
+
+/* ===== Histórico ===== */
+.linha-historico {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 8px;
+  padding: 10px 4px;
+  border-bottom: 1px solid var(--borda);
+  font-size: 13px;
+}
+.linha-historico:last-child { border-bottom: none; }
+.linha-historico .intervalo { color: var(--texto); font-weight: 500; }
+.linha-historico .total { color: var(--texto-sec); }
+.tag-status {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+.tag-status.boa { background: #DCFCE7; color: #166534; }
+.tag-status.andamento { background: #F3F4F6; color: var(--texto-sec); }
+
+/* ===== Brincadeiras ===== */
+.chips-categoria {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+.chip {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid var(--borda);
+  background: var(--fundo);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--texto-sec);
+  white-space: nowrap;
+}
+.chip.ativo { color: #fff; border-color: transparent; }
+
+.grid-brincadeiras {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+@media (min-width: 600px) { .grid-brincadeiras { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 900px) { .grid-brincadeiras { grid-template-columns: repeat(3, 1fr); } }
+
+.card-brincadeira {
+  position: relative;
+  border: 1px solid var(--borda);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--fundo);
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  cursor: pointer;
+}
+.card-brincadeira .tarja { position: absolute; left: 0; top: 0; bottom: 0; width: 6px; }
+.card-brincadeira .conteudo { padding: 14px 44px 14px 20px; }
+.card-brincadeira .cabecalho { display: flex; align-items: flex-start; gap: 10px; }
+.card-brincadeira svg.icone-cat { width: 28px; height: 28px; flex-shrink: 0; }
+.card-brincadeira h3 { font-size: 16px; margin-bottom: 2px; }
+.card-brincadeira .duracao { font-size: 13px; color: var(--texto-sec); }
+.btn-favorito {
+  position: absolute;
+  top: 6px; right: 6px;
+  width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  border: none;
+}
+.detalhe-brincadeira { display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--borda); font-size: 14px; }
+.detalhe-brincadeira.aberto { display: block; }
+.detalhe-brincadeira h4 { font-size: 13px; font-weight: 600; margin-bottom: 4px; color: var(--texto-sec); }
+.detalhe-brincadeira ol { padding-left: 18px; margin-bottom: 4px; }
+.detalhe-brincadeira li { margin-bottom: 4px; }
+
+/* ===== Placeholder ===== */
+.placeholder-aba {
+  text-align: center;
+  color: var(--texto-sec);
+  padding: 48px 16px;
+}
+
+/* ===== Atividades: grid de cards ===== */
+.grid-atividades {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+@media (min-width: 600px) { .grid-atividades { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 900px) { .grid-atividades { grid-template-columns: repeat(3, 1fr); } }
+
+.card-atividade {
+  position: relative;
+  border: 1px solid var(--borda);
+  border-radius: 14px;
+  background: var(--fundo);
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  padding: 16px 44px 16px 16px;
+  cursor: pointer;
+}
+.card-atividade svg.icone-cat { width: 28px; height: 28px; color: var(--verde); flex-shrink: 0; }
+.card-atividade .cabecalho { display: flex; align-items: center; gap: 10px; }
+.card-atividade h3 { font-size: 16px; }
+.card-atividade .dificuldade { font-size: 13px; color: var(--texto-sec); margin-top: 4px; }
+.card-atividade .btn-favorito { position: absolute; top: 6px; right: 6px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; }
+
+/* ===== Atividades: controles e folha ===== */
+.controles-folha {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.controles-folha select, .controles-folha button {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--borda);
+  border-radius: 10px;
+  background: var(--fundo);
+  color: var(--texto);
+  font-size: 14px;
+}
+.controles-folha button { background: var(--verde); color: #fff; border-color: var(--verde); font-weight: 500; }
+.acoes-folha { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+.acoes-folha button {
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 10px;
+  border: 1px solid var(--borda);
+  font-size: 14px;
+  font-weight: 500;
+}
+#btnImprimir { background: var(--verde); color: #fff; border-color: var(--verde); }
+#btnVoltarAtividade { background: var(--fundo); color: var(--texto-sec); }
+
+.folha-a4 {
+  background: #fff;
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  padding: 14mm 12mm;
+  max-width: 620px;
+  margin: 0 auto;
+  color: #000;
+}
+.folha-cabecalho { font-size: 14pt; font-weight: 600; border-bottom: 2px solid #000; padding-bottom: 8px; }
+.folha-corpo { min-height: 320px; padding: 16px 0; }
+.folha-rodape { margin-top: 24px; padding-top: 8px; border-top: 1px dashed #000; font-size: 12pt; }
+
+/* ===== Atividade: colorir ===== */
+.area-colorir { display: flex; justify-content: center; align-items: center; padding: 20px 0; }
+.area-colorir svg { width: 260px; height: 260px; }
+
+/* ===== Atividade: sombras ===== */
+.colunas-sombra { display: flex; justify-content: space-between; gap: 24px; }
+.coluna-sombra { display: flex; flex-direction: column; gap: 28px; flex: 1; }
+.item-sombra { display: flex; align-items: center; gap: 12px; }
+.figura-sombra { width: 70px; height: 70px; flex-shrink: 0; }
+.letra-sombra {
+  font-size: 18px; font-weight: 700;
+  width: 30px; height: 30px;
+  border: 2px solid #000; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ===== Atividade: memória ===== */
+.grade-memoria { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
+.carta-memoria { border: 2px dashed #000; padding: 6px; aspect-ratio: 1; }
+.carta-memoria svg { width: 100%; height: 100%; }
+
+/* ===== Atividade: contar e colorir ===== */
+.lista-contar { display: flex; flex-direction: column; }
+.linha-contar { display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #000; padding: 10px 0; }
+.repeticoes-contar { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
+.figura-contar { width: 32px; height: 32px; }
+.caixa-numero { width: 40px; height: 40px; border: 2px solid #000; border-radius: 6px; flex-shrink: 0; }
+
+/* ===== Atividade: labirinto ===== */
+.area-labirinto { display: flex; justify-content: center; }
+.area-labirinto svg { width: 100%; max-width: 420px; }
+
+/* ===== Atividade: traçar letras/números ===== */
+.grade-traco { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.linha-pautada {
+  position: relative;
+  height: 90px;
+  border-top: 1px solid #000;
+  border-bottom: 1px solid #000;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.linha-pautada::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; top: 50%;
+  border-top: 1px dashed #999;
+}
+.letra-grande {
+  font-size: 60px;
+  font-weight: 700;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  position: relative;
+  z-index: 1;
+}
+.letra-contorno { -webkit-text-stroke: 2px #999; color: transparent; }
+.letra-fantasma { color: #000; opacity: 0.25; }
+
+/* ===== Atividade: ponto a ponto ===== */
+.area-ponto-a-ponto { display: flex; justify-content: center; }
+.area-ponto-a-ponto svg { width: 100%; max-width: 380px; }
+
+/* ===== Rodapé ===== */
+footer.rodape {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  padding: 20px 16px 32px;
+  border-top: 1px solid var(--borda);
+  max-width: 900px;
+  margin: 0 auto;
+}
+footer.rodape button {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--borda);
+  background: var(--fundo);
+  border-radius: 10px;
+  color: var(--texto-sec);
+  font-size: 13px;
+  font-weight: 500;
+}
+footer.rodape button.perigo { color: #DC2626; border-color: #FCA5A5; }
+
+/* ===== Responsivo ===== */
+@media (min-width: 600px) {
+  main { padding: 20px; }
+  .card { padding: 20px; }
+}
+@media (min-width: 900px) {
+  main { padding: 20px 24px; }
+}
+
+/* ===== Impressão ===== */
+@page { size: A4 portrait; margin: 12mm; }
+@media print {
+  body * { visibility: hidden; }
+  .folha-a4, .folha-a4 * { visibility: visible; }
+  .folha-a4 { position: absolute; left: 0; top: 0; width: 100%; }
+  .no-print { display: none !important; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100" height="100" rx="22" fill="#2563EB"/>
+    <path d="M50 28 L78 40 L50 52 L22 40 Z" fill="#FFFFFF"/>
+    <path d="M32 46 V64 Q50 74 68 64 V46" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="78" cy="40" r="4" fill="#FFFFFF"/>
+    <line x1="78" y1="40" x2="78" y2="58" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
+  </svg>
+  <div class="header-titulo">
+    <span class="fixo">Acompanhamento de</span>
+    <input id="nomeCrianca" type="text" placeholder="nome">
+  </div>
+</header>
+
+<nav class="tabs">
+  <button data-tab="1" class="ativa">Checklist</button>
+  <button data-tab="2">Atividades</button>
+  <button data-tab="3">Brincadeiras</button>
+</nav>
+
+<main>
+  <section id="painel-1" class="painel-tab ativo">
+    <div class="card">
+      <h2>Checklist do dia</h2>
+      <div class="seletor-data" style="margin-top:12px;">
+        <button id="diaAnterior" aria-label="Dia anterior">‹</button>
+        <input type="date" id="dataSelecionada">
+        <button id="diaSeguinte" aria-label="Dia seguinte">›</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div id="listaItens"></div>
+      <div class="rotulo" style="display:block; margin-top:14px;">Observação do dia</div>
+      <textarea id="observacaoDia" placeholder="Algo que valha a pena anotar sobre hoje (opcional)"></textarea>
+      <div class="feedback-salvo" id="feedbackSalvo">Salvo</div>
+    </div>
+
+    <div class="card">
+      <h2>Semana atual</h2>
+      <div class="rotulo" id="intervaloSemana" style="display:block; margin-bottom:12px;"></div>
+      <div id="listaSemana"></div>
+      <div class="faixa-status" id="faixaStatus"></div>
+    </div>
+
+    <div class="card">
+      <h2>Últimas semanas</h2>
+      <div id="listaHistorico"></div>
+    </div>
+  </section>
+
+  <section id="painel-2" class="painel-tab">
+    <div id="viewGradeAtividades">
+      <div class="card">
+        <h2>Atividades imprimíveis</h2>
+      </div>
+      <div class="grid-atividades" id="gridAtividades"></div>
+    </div>
+    <div id="viewFolhaAtividade" style="display:none;">
+      <div class="controles-folha no-print" id="controlesFolha"></div>
+      <div class="folha-a4" id="folhaA4">
+        <div class="folha-cabecalho" id="folhaCabecalho"></div>
+        <div class="folha-corpo" id="folhaCorpo"></div>
+        <div class="folha-rodape">Nome: ______________________________________</div>
+      </div>
+      <div class="acoes-folha no-print">
+        <button id="btnImprimir" type="button">Imprimir</button>
+        <button id="btnVoltarAtividade" type="button">Voltar</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="painel-3" class="painel-tab">
+    <div class="card">
+      <h2>Brincadeiras</h2>
+      <div class="chips-categoria" id="chipsBrincadeiras" style="margin-top:12px;"></div>
+    </div>
+    <div class="grid-brincadeiras" id="gridBrincadeiras"></div>
+  </section>
+</main>
+
+<footer class="rodape">
+  <button id="btnExportar">Exportar backup</button>
+  <button id="btnImportar">Importar backup</button>
+  <input type="file" id="inputImportar" accept="application/json" style="display:none;">
+  <button id="btnApagar" class="perigo">Apagar tudo</button>
+</footer>
+
+<script>
+/* ===== Armazenamento ===== */
+const store = {
+  get(k, def) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; }
+                catch(e) { return def; } },
+  set(k, v)  { try { localStorage.setItem(k, JSON.stringify(v)); return true; }
+               catch(e) { return false; } }
+};
+
+/* ===== Datas ===== */
+const hoje = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+function parseISO(s) {
+  const [y, m, d] = s.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+function addDias(dataISO, n) {
+  const d = parseISO(dataISO);
+  d.setDate(d.getDate() + n);
+  return hoje(d);
+}
+function getSegunda(dataISO) {
+  const d = parseISO(dataISO);
+  const dia = d.getDay();
+  const diff = (dia === 0 ? -6 : 1 - dia);
+  d.setDate(d.getDate() + diff);
+  return d;
+}
+function formatarDataCurta(d) {
+  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`;
+}
+
+/* ===== Config ===== */
+const config = store.get('acomp.config', { nomeCrianca: '' });
+const inputNome = document.getElementById('nomeCrianca');
+inputNome.value = config.nomeCrianca || '';
+inputNome.addEventListener('input', () => {
+  config.nomeCrianca = inputNome.value;
+  store.set('acomp.config', config);
+});
+
+/* ===== Navegação de abas ===== */
+const botoesTab = document.querySelectorAll('nav.tabs button');
+const paineisTab = document.querySelectorAll('.painel-tab');
+botoesTab.forEach(btn => {
+  btn.addEventListener('click', () => {
+    botoesTab.forEach(b => b.classList.remove('ativa'));
+    paineisTab.forEach(p => p.classList.remove('ativo'));
+    btn.classList.add('ativa');
+    document.getElementById('painel-' + btn.dataset.tab).classList.add('ativo');
+  });
+});
+
+/* ===== Checklist: itens ===== */
+const ITENS_CHECKLIST = [
+  { id: 'concentracao', label: 'Concentração', desc: 'Ficou 15-20 min numa atividade só' },
+  { id: 'instrucoes', label: 'Seguir instruções', desc: 'Cumpriu uma sequência de 2-3 passos' },
+  { id: 'frustracao', label: 'Frustração', desc: 'Algo deu errado e ele tentou de novo' },
+  { id: 'interacao', label: 'Interação social', desc: 'Brincou bem com outras crianças' },
+  { id: 'qualidade', label: 'Tempo de qualidade', desc: 'Tivemos tempo focado juntos' }
+];
+
+let checklistDados = store.get('acomp.checklist', {});
+const inputData = document.getElementById('dataSelecionada');
+const listaItens = document.getElementById('listaItens');
+const observacaoDia = document.getElementById('observacaoDia');
+const feedbackSalvo = document.getElementById('feedbackSalvo');
+let timeoutFeedback = null;
+
+function registroDoDia(dataISO) {
+  if (!checklistDados[dataISO]) {
+    checklistDados[dataISO] = { itens: [false, false, false, false, false], nota: '' };
+  }
+  return checklistDados[dataISO];
+}
+
+function renderizarItens(dataISO) {
+  const reg = registroDoDia(dataISO);
+  listaItens.innerHTML = '';
+  ITENS_CHECKLIST.forEach((item, i) => {
+    const label = document.createElement('label');
+    label.className = 'item-check';
+    label.innerHTML = `
+      <input type="checkbox" data-indice="${i}" ${reg.itens[i] ? 'checked' : ''}>
+      <span class="texto-item">
+        <strong>${item.label}</strong>
+        <small>${item.desc}</small>
+      </span>
+    `;
+    listaItens.appendChild(label);
+  });
+  observacaoDia.value = reg.nota || '';
+}
+
+function mostrarFeedbackSalvo() {
+  feedbackSalvo.classList.add('mostrar');
+  clearTimeout(timeoutFeedback);
+  timeoutFeedback = setTimeout(() => feedbackSalvo.classList.remove('mostrar'), 2000);
+}
+
+function salvarChecklist() {
+  store.set('acomp.checklist', checklistDados);
+  mostrarFeedbackSalvo();
+  renderizarSemana();
+}
+
+listaItens.addEventListener('change', (e) => {
+  if (e.target.matches('input[type="checkbox"]')) {
+    const dataISO = inputData.value;
+    const reg = registroDoDia(dataISO);
+    reg.itens[Number(e.target.dataset.indice)] = e.target.checked;
+    salvarChecklist();
+  }
+});
+
+observacaoDia.addEventListener('input', () => {
+  const dataISO = inputData.value;
+  const reg = registroDoDia(dataISO);
+  reg.nota = observacaoDia.value;
+  salvarChecklist();
+});
+
+/* ===== Painel semanal ===== */
+const listaSemana = document.getElementById('listaSemana');
+const intervaloSemana = document.getElementById('intervaloSemana');
+const faixaStatus = document.getElementById('faixaStatus');
+const listaHistorico = document.getElementById('listaHistorico');
+
+function contarSemana(segunda) {
+  const contagens = [0, 0, 0, 0, 0];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(segunda);
+    d.setDate(d.getDate() + i);
+    const iso = hoje(d);
+    const reg = checklistDados[iso];
+    if (reg) {
+      reg.itens.forEach((marcado, idx) => { if (marcado) contagens[idx]++; });
+    }
+  }
+  return contagens;
+}
+
+function statusSemana(contagens) {
+  const itensBons = contagens.filter(c => c >= 3).length;
+  return itensBons >= 3 ? 'boa' : 'andamento';
+}
+
+function renderizarSemana() {
+  const dataISO = inputData.value;
+  const segunda = getSegunda(dataISO);
+  const domingo = new Date(segunda);
+  domingo.setDate(domingo.getDate() + 6);
+  intervaloSemana.textContent = `${formatarDataCurta(segunda)} a ${formatarDataCurta(domingo)}`;
+
+  const contagens = contarSemana(segunda);
+  listaSemana.innerHTML = '';
+  ITENS_CHECKLIST.forEach((item, i) => {
+    const pct = Math.round((contagens[i] / 7) * 100);
+    const linha = document.createElement('div');
+    linha.className = 'linha-item-semana';
+    linha.innerHTML = `
+      <div class="topo-linha"><span>${item.label}</span><span>${contagens[i]}/7</span></div>
+      <div class="barra-fundo"><div class="barra-progresso" style="width:${pct}%"></div></div>
+    `;
+    listaSemana.appendChild(linha);
+  });
+
+  const status = statusSemana(contagens);
+  faixaStatus.className = 'faixa-status ' + status;
+  faixaStatus.textContent = status === 'boa' ? 'Semana boa' : 'Semana em andamento';
+
+  renderizarHistorico(segunda);
+}
+
+function renderizarHistorico(segundaAtual) {
+  listaHistorico.innerHTML = '';
+  for (let s = 0; s < 4; s++) {
+    const segunda = new Date(segundaAtual);
+    segunda.setDate(segunda.getDate() - (7 * s));
+    const domingo = new Date(segunda);
+    domingo.setDate(domingo.getDate() + 6);
+    const contagens = contarSemana(segunda);
+    const total = contagens.reduce((a, b) => a + b, 0);
+    const status = statusSemana(contagens);
+
+    const linha = document.createElement('div');
+    linha.className = 'linha-historico';
+    linha.innerHTML = `
+      <span class="intervalo">${formatarDataCurta(segunda)} - ${formatarDataCurta(domingo)}</span>
+      <span class="total">${total} marcações</span>
+      <span class="tag-status ${status}">${status === 'boa' ? 'Semana boa' : 'Em andamento'}</span>
+    `;
+    listaHistorico.appendChild(linha);
+  }
+}
+
+/* ===== Seletor de data ===== */
+function carregarData(dataISO) {
+  inputData.value = dataISO;
+  renderizarItens(dataISO);
+  renderizarSemana();
+}
+
+inputData.addEventListener('change', () => carregarData(inputData.value));
+document.getElementById('diaAnterior').addEventListener('click', () => carregarData(addDias(inputData.value, -1)));
+document.getElementById('diaSeguinte').addEventListener('click', () => carregarData(addDias(inputData.value, 1)));
+
+carregarData(hoje(new Date()));
+
+/* ===== Backup: exportar / importar / apagar ===== */
+document.getElementById('btnExportar').addEventListener('click', () => {
+  const dados = {
+    'acomp.checklist': store.get('acomp.checklist', {}),
+    'acomp.favAtividades': store.get('acomp.favAtividades', []),
+    'acomp.favBrincadeiras': store.get('acomp.favBrincadeiras', []),
+    'acomp.config': store.get('acomp.config', {})
+  };
+  const blob = new Blob([JSON.stringify(dados, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `acompanhamento-${hoje(new Date())}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+
+const inputImportar = document.getElementById('inputImportar');
+document.getElementById('btnImportar').addEventListener('click', () => inputImportar.click());
+inputImportar.addEventListener('change', () => {
+  const arquivo = inputImportar.files[0];
+  if (!arquivo) return;
+  const leitor = new FileReader();
+  leitor.onload = () => {
+    try {
+      const dados = JSON.parse(leitor.result);
+      const chavesValidas = ['acomp.checklist', 'acomp.favAtividades', 'acomp.favBrincadeiras', 'acomp.config'];
+      const temChaveValida = chavesValidas.some(k => k in dados);
+      if (!temChaveValida) { alert('Arquivo inválido: nenhuma chave reconhecida.'); return; }
+      if (!confirm('Importar este backup vai substituir todos os dados atuais. Continuar?')) return;
+      chavesValidas.forEach(k => { if (k in dados) store.set(k, dados[k]); });
+      alert('Backup importado com sucesso. A página será recarregada.');
+      location.reload();
+    } catch (e) {
+      alert('Não foi possível ler o arquivo. Verifique se é um backup válido.');
+    }
+  };
+  leitor.readAsText(arquivo);
+  inputImportar.value = '';
+});
+
+document.getElementById('btnApagar').addEventListener('click', () => {
+  if (!confirm('Isso vai apagar todos os dados salvos (checklist, favoritos e configurações). Tem certeza?')) return;
+  ['acomp.checklist', 'acomp.favAtividades', 'acomp.favBrincadeiras', 'acomp.config'].forEach(k => {
+    try { localStorage.removeItem(k); } catch(e) {}
+  });
+  location.reload();
+});
+
+/* ===== Brincadeiras: dados ===== */
+const CATEGORIAS_BRINCADEIRA = {
+  pintura: { nome: 'Pintura', cor: '#EC4899' },
+  construcao: { nome: 'Construção', cor: '#16A34A' },
+  movimento: { nome: 'Movimento', cor: '#F97316' },
+  jogo: { nome: 'Jogo', cor: '#2563EB' },
+  culinaria: { nome: 'Culinária', cor: '#FBBF24' }
+};
+
+const BRINCADEIRAS = [
+  { id: 'pintura-esponja', nome: 'Pintura com esponja', categoria: 'pintura', duracao: '20 min',
+    materiais: ['Esponja', 'Prato ou paleta', 'Tinta guache', 'Folha de papel'],
+    descricao: 'Carimbar formas na folha usando pedaços de esponja molhados em tinta.',
+    comoFazer: ['Corte a esponja em pedaços pequenos.', 'Molhe cada pedaço na tinta guache.', 'Carimbe a folha fazendo padrões e formas.'] },
+  { id: 'pintura-soprada', nome: 'Pintura soprada com canudo', categoria: 'pintura', duracao: '20 min',
+    materiais: ['Canudo', 'Tinta guache diluída em água', 'Folha de papel'],
+    descricao: 'Pingar tinta na folha e soprar com o canudo para espalhar em formas livres.',
+    comoFazer: ['Pingue algumas gotas de tinta diluída na folha.', 'Aponte o canudo perto da gota, sem encostar.', 'Sopre com força para a tinta escorrer e criar desenhos.'] },
+  { id: 'pintura-carimbo-dedo', nome: 'Carimbo de dedo', categoria: 'pintura', duracao: '15 min',
+    materiais: ['Tinta guache', 'Prato', 'Folha de papel', 'Pano úmido'],
+    descricao: 'Usar os dedos como pincel para criar desenhos e personagens carimbados.',
+    comoFazer: ['Passe a ponta do dedo na tinta.', 'Carimbe a folha quantas vezes quiser.', 'Use um pano úmido para limpar os dedos entre as cores.'] },
+
+  { id: 'construcao-torre', nome: 'Torre de blocos', categoria: 'construcao', duracao: '20 min',
+    materiais: ['Blocos de montar ou caixas pequenas'],
+    descricao: 'Empilhar blocos tentando fazer a torre mais alta possível sem derrubar.',
+    comoFazer: ['Escolha uma base firme no chão.', 'Empilhe os blocos um a um, do maior para o menor.', 'Quando cair, comemore e comece de novo.'] },
+  { id: 'construcao-casinha', nome: 'Casinha de almofadas', categoria: 'construcao', duracao: '30 min',
+    materiais: ['Almofadas', 'Cobertores', 'Cadeiras'],
+    descricao: 'Construir uma casinha usando almofadas e cobertores como paredes e teto.',
+    comoFazer: ['Apoie os cobertores sobre duas cadeiras para formar o teto.', 'Use almofadas para fechar as laterais.', 'Entre na casinha e decore por dentro com brinquedos.'] },
+  { id: 'construcao-cidade', nome: 'Cidade de caixinhas', categoria: 'construcao', duracao: '30 min',
+    materiais: ['Caixas de papelão pequenas', 'Embalagens vazias', 'Lápis de cor (opcional)'],
+    descricao: 'Usar embalagens e caixinhas para montar uma cidade com prédios e ruas.',
+    comoFazer: ['Junte caixinhas e embalagens de diferentes tamanhos.', 'Organize-as no chão formando ruas entre elas.', 'Brinque com carrinhos ou bonecos passeando pela cidade.'] },
+
+  { id: 'movimento-amarelinha', nome: 'Pular na amarelinha', categoria: 'movimento', duracao: '20 min',
+    materiais: ['Giz de calçada ou fita crepe', 'Uma pedrinha'],
+    descricao: 'Desenhar uma amarelinha no chão e pular de casa em casa em um pé só.',
+    comoFazer: ['Desenhe os quadrados numerados no chão.', 'Jogue a pedrinha em um quadrado.', 'Pule de casa em casa em um pé só, evitando o quadrado da pedrinha.'] },
+  { id: 'movimento-corrida-colher', nome: 'Corrida do ovo na colher', categoria: 'movimento', duracao: '15 min',
+    materiais: ['Colher', 'Bolinha ou ovo de brinquedo'],
+    descricao: 'Equilibrar uma bolinha na colher e caminhar até um ponto de chegada sem deixar cair.',
+    comoFazer: ['Coloque a bolinha sobre a colher.', 'Segure a colher com uma mão e caminhe devagar.', 'Se a bolinha cair, volte ao início e tente de novo.'] },
+  { id: 'movimento-dança-estatuas', nome: 'Dança das estátuas', categoria: 'movimento', duracao: '15 min',
+    materiais: ['Música (celular ou rádio)'],
+    descricao: 'Dançar livremente e congelar como uma estátua quando a música parar.',
+    comoFazer: ['Ligue uma música animada.', 'Dance à vontade enquanto a música toca.', 'Pause a música de repente e fique parado como estátua.'] },
+
+  { id: 'jogo-caca-tesouro', nome: 'Caça ao tesouro', categoria: 'jogo', duracao: '25 min',
+    materiais: ['Um objeto ou brinquedo para esconder', 'Papel para pistas (opcional)'],
+    descricao: 'Esconder um objeto pela casa e dar pistas simples até a criança encontrá-lo.',
+    comoFazer: ['Esconda um brinquedo em um local da casa.', 'Dê uma pista simples de "quente" ou "frio" enquanto ela procura.', 'Comemore juntos quando o tesouro for encontrado.'] },
+  { id: 'jogo-memoria-objetos', nome: 'Jogo da memória com objetos', categoria: 'jogo', duracao: '20 min',
+    materiais: ['4 a 6 copos ou potes', 'Pares de objetos pequenos'],
+    descricao: 'Esconder pares de objetos embaixo de copos virados e tentar encontrar os pares.',
+    comoFazer: ['Coloque um par de objetos iguais embaixo de dois copos diferentes.', 'Misture a posição dos copos.', 'Vire dois copos por vez tentando achar o par igual.'] },
+  { id: 'jogo-boliche', nome: 'Boliche caseiro', categoria: 'jogo', duracao: '20 min',
+    materiais: ['Garrafas pet vazias', 'Uma bola'],
+    descricao: 'Usar garrafas pet como pinos de boliche e derrubá-las rolando uma bola.',
+    comoFazer: ['Organize as garrafas em formato de triângulo.', 'Marque uma distância para o lançamento.', 'Role a bola tentando derrubar o maior número de garrafas.'] },
+
+  { id: 'culinaria-espetinho-frutas', nome: 'Espetinho de frutas', categoria: 'culinaria', duracao: '20 min',
+    materiais: ['Frutas picadas em pedaços', 'Palitos de espetinho sem ponta'],
+    descricao: 'Montar espetinhos coloridos intercalando pedaços de frutas variadas.',
+    comoFazer: ['Corte as frutas em pedaços pequenos (o adulto faz o corte).', 'Deixe a criança escolher a ordem das frutas.', 'Monte o espetinho intercalando as cores.'] },
+  { id: 'culinaria-sanduiche-divertido', nome: 'Sanduíche divertido', categoria: 'culinaria', duracao: '20 min',
+    materiais: ['Pão de forma', 'Cortador de biscoito', 'Recheio simples'],
+    descricao: 'Montar um sanduíche usando formas divertidas de cortador de biscoito.',
+    comoFazer: ['Passe o recheio no pão.', 'Use o cortador de biscoito para dar uma forma divertida à fatia.', 'Sirva e deixe a criança decorar por cima com pedacinhos de fruta ou legumes.'] },
+  { id: 'culinaria-salada-frutas', nome: 'Salada de frutas mexida', categoria: 'culinaria', duracao: '15 min',
+    materiais: ['Frutas picadas', 'Tigela grande', 'Colher'],
+    descricao: 'Misturar pedaços de frutas variadas numa tigela para fazer uma salada colorida.',
+    comoFazer: ['Coloque as frutas picadas na tigela.', 'Deixe a criança mexer tudo com a colher.', 'Sirva em potinhos individuais para experimentar.'] }
+];
+
+let favBrincadeiras = store.get('acomp.favBrincadeiras', []);
+let filtroBrincadeira = 'todas';
+
+function iconeCategoria(cat) {
+  const partes = {
+    pintura: '<path d="M12 2 C8 8 5 11 5 15a7 7 0 0 0 14 0c0-4-3-7-7-13Z" fill="currentColor" stroke="none"/>',
+    construcao: '<rect x="3" y="10" width="7" height="7" rx="1"/><rect x="14" y="10" width="7" height="7" rx="1"/><rect x="8.5" y="3" width="7" height="7" rx="1"/>',
+    movimento: '<circle cx="12" cy="5" r="2" fill="currentColor" stroke="none"/><path d="M12 8 L9 13 M12 8 L15 12 M12 8 L12 12 M12 12 L9 20 M12 12 L16 19"/>',
+    jogo: '<rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="15.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="8.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/>',
+    culinaria: '<path d="M6 2 V10 M9 2 V10 M6 8 C6 11 9 11 9 8 M7.5 8 V22"/><path d="M16 2 C13 3 13 8 16 9 V22"/>'
+  };
+  const cor = CATEGORIAS_BRINCADEIRA[cat].cor;
+  return `<svg class="icone-cat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:${cor}">${partes[cat]}</svg>`;
+}
+
+function iconeCoracao(preenchido, cor) {
+  return `<svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 21s-7.5-4.6-10-9.3C0.5 8.5 2 4 6 4c2 0 3.5 1.2 4 2.5C10.5 5.2 12 4 14 4c4 0 5.5 4.5 4 7.7C19.5 16.4 12 21 12 21Z" fill="${preenchido ? cor : 'none'}" stroke="${preenchido ? cor : '#9CA3AF'}" stroke-width="2"/></svg>`;
+}
+
+function brincadeirasFiltradas() {
+  if (filtroBrincadeira === 'todas') return BRINCADEIRAS;
+  if (filtroBrincadeira === 'favoritas') return BRINCADEIRAS.filter(b => favBrincadeiras.includes(b.id));
+  return BRINCADEIRAS.filter(b => b.categoria === filtroBrincadeira);
+}
+
+function renderizarChipsBrincadeiras() {
+  const chips = document.getElementById('chipsBrincadeiras');
+  const opcoes = [
+    { id: 'todas', nome: 'Todas', cor: '#EC4899' },
+    ...Object.entries(CATEGORIAS_BRINCADEIRA).map(([id, c]) => ({ id, nome: c.nome, cor: c.cor })),
+    { id: 'favoritas', nome: 'Favoritas', cor: '#EC4899' }
+  ];
+  chips.innerHTML = '';
+  opcoes.forEach(op => {
+    const btn = document.createElement('button');
+    btn.className = 'chip' + (filtroBrincadeira === op.id ? ' ativo' : '');
+    btn.textContent = op.nome;
+    if (filtroBrincadeira === op.id) {
+      btn.style.background = op.cor;
+      btn.style.borderColor = op.cor;
+    }
+    btn.addEventListener('click', () => {
+      filtroBrincadeira = op.id;
+      renderizarChipsBrincadeiras();
+      renderizarGridBrincadeiras();
+    });
+    chips.appendChild(btn);
+  });
+}
+
+function renderizarGridBrincadeiras() {
+  const grid = document.getElementById('gridBrincadeiras');
+  grid.innerHTML = '';
+  brincadeirasFiltradas().forEach(b => {
+    const cor = CATEGORIAS_BRINCADEIRA[b.categoria].cor;
+    const favorita = favBrincadeiras.includes(b.id);
+    const card = document.createElement('div');
+    card.className = 'card-brincadeira';
+    card.innerHTML = `
+      <div class="tarja" style="background:${cor}"></div>
+      <button class="btn-favorito" aria-label="Favoritar" type="button">${iconeCoracao(favorita, cor)}</button>
+      <div class="conteudo">
+        <div class="cabecalho">
+          ${iconeCategoria(b.categoria)}
+          <div>
+            <h3>${b.nome}</h3>
+            <div class="duracao">${b.duracao}</div>
+          </div>
+        </div>
+        <p style="margin-top:8px;color:var(--texto-sec);font-size:14px;">${b.descricao}</p>
+        <div class="detalhe-brincadeira">
+          <h4>Materiais</h4>
+          <p style="margin-bottom:10px;">${b.materiais.join(', ')}</p>
+          <h4>Como fazer</h4>
+          <ol>${b.comoFazer.map(p => `<li>${p}</li>`).join('')}</ol>
+        </div>
+      </div>
+    `;
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.btn-favorito')) return;
+      card.querySelector('.detalhe-brincadeira').classList.toggle('aberto');
+    });
+    card.querySelector('.btn-favorito').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const idx = favBrincadeiras.indexOf(b.id);
+      if (idx >= 0) favBrincadeiras.splice(idx, 1); else favBrincadeiras.push(b.id);
+      store.set('acomp.favBrincadeiras', favBrincadeiras);
+      renderizarGridBrincadeiras();
+    });
+    grid.appendChild(card);
+  });
+}
+
+renderizarChipsBrincadeiras();
+renderizarGridBrincadeiras();
+
+/* ===== Atividades: figuras base ===== */
+function shapeSVG(shape, modo) {
+  const estilo = modo === 'silhueta'
+    ? 'fill="#000" stroke="none"'
+    : 'fill="none" stroke="#000" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"';
+  if (shape.type === 'circle') return `<circle cx="${shape.cx}" cy="${shape.cy}" r="${shape.r}" ${estilo}/>`;
+  return `<path d="${shape.d}" ${estilo}/>`;
+}
+function shapeDetalhe(shape) {
+  const estilo = 'fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"';
+  if (shape.type === 'circle') return `<circle cx="${shape.cx}" cy="${shape.cy}" r="${shape.r}" ${estilo}/>`;
+  return `<path d="${shape.d}" ${estilo}/>`;
+}
+const FIGURAS_BASE = {
+  casa: {
+    contorno: { type: 'path', d: 'M20,90 L20,50 L50,25 L80,50 L80,90 Z' },
+    extras: [],
+    detalhes: [
+      { type: 'path', d: 'M42,90 L42,68 L58,68 L58,90' },
+      { type: 'path', d: 'M28,55 L40,55 L40,66 L28,66 Z M28,60.5 L40,60.5 M34,55 L34,66' }
+    ]
+  },
+  sol: {
+    contorno: { type: 'circle', cx: 50, cy: 50, r: 18 },
+    extras: [],
+    detalhes: [
+      { type: 'path', d: 'M70,50 L80,50 M64.1,64.1 L71.2,71.2 M50,70 L50,80 M35.9,64.1 L28.8,71.2 M30,50 L20,50 M35.9,35.9 L28.8,28.8 M50,30 L50,20 M64.1,35.9 L71.2,28.8' }
+    ]
+  },
+  peixe: {
+    contorno: { type: 'path', d: 'M15,50 C15,32 40,25 62,35 L88,18 L76,50 L88,82 L62,65 C40,75 15,68 15,50 Z' },
+    extras: [],
+    detalhes: [
+      { type: 'circle', cx: 55, cy: 40, r: 3 },
+      { type: 'path', d: 'M45,35 C50,42 50,48 45,55' }
+    ]
+  },
+  flor: {
+    contorno: { type: 'path', d: 'M50,18 C58,18 62,26 58,33 C68,30 76,38 70,47 C79,50 79,61 69,64 C74,72 66,80 57,75 C58,85 42,85 43,75 C34,80 26,72 31,64 C21,61 21,50 30,47 C24,38 32,30 42,33 C38,26 42,18 50,18 Z' },
+    extras: [],
+    detalhes: [
+      { type: 'circle', cx: 50, cy: 51, r: 7 },
+      { type: 'path', d: 'M50,85 L50,98' },
+      { type: 'path', d: 'M50,90 C42,90 37,95 33,98' }
+    ]
+  },
+  carro: {
+    contorno: { type: 'path', d: 'M8,72 L8,58 C8,52 13,50 18,50 L28,50 L38,35 L68,35 L78,50 L88,50 C93,50 92,55 92,58 L92,72 Z' },
+    extras: [
+      { type: 'circle', cx: 28, cy: 74, r: 9 },
+      { type: 'circle', cx: 74, cy: 74, r: 9 }
+    ],
+    detalhes: [
+      { type: 'path', d: 'M40,37 L40,49 L66,49 L66,37 Z M53,37 L53,49' }
+    ]
+  },
+  gato: {
+    contorno: { type: 'path', d: 'M25,90 C15,90 12,75 18,65 C12,55 18,42 32,40 C30,50 35,58 45,58 C55,58 60,50 58,40 C72,42 78,55 72,65 C78,75 75,90 65,90 Z' },
+    extras: [
+      { type: 'circle', cx: 45, cy: 32, r: 14 },
+      { type: 'path', d: 'M34,22 L38,8 L46,20 Z' },
+      { type: 'path', d: 'M56,20 L64,8 L68,22 Z' },
+      { type: 'path', d: 'M72,80 C85,78 90,65 82,55 C90,60 92,75 80,85 Z' }
+    ],
+    detalhes: [
+      { type: 'circle', cx: 40, cy: 30, r: 2 },
+      { type: 'circle', cx: 50, cy: 30, r: 2 },
+      { type: 'path', d: 'M30,35 L15,32 M30,38 L15,38 M60,35 L75,32 M60,38 L75,38' },
+      { type: 'path', d: 'M45,36 L42,40 M45,36 L48,40' }
+    ]
+  }
+};
+const FIGURAS_NOMES = { casa: 'Casa', sol: 'Sol', peixe: 'Peixe', flor: 'Flor', carro: 'Carro', gato: 'Gato' };
+
+function renderFigura(id, modo) {
+  const fig = FIGURAS_BASE[id];
+  let html = [fig.contorno, ...fig.extras].map(s => shapeSVG(s, modo)).join('');
+  if (modo !== 'silhueta') html += fig.detalhes.map(shapeDetalhe).join('');
+  return html;
+}
+function svgFigura(id, modo) {
+  return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">${renderFigura(id, modo)}</svg>`;
+}
+
+/* ===== Atividades: cadastro e ícones ===== */
+const ATIVIDADES = [
+  { id: 'colorir', nome: 'Colorir', dificuldade: 'Fácil' },
+  { id: 'sombras', nome: 'Sombras', dificuldade: 'Médio' },
+  { id: 'memoria', nome: 'Memória para recortar', dificuldade: 'Médio' },
+  { id: 'contar', nome: 'Contar e colorir', dificuldade: 'Fácil' },
+  { id: 'labirinto', nome: 'Labirinto', dificuldade: 'Médio' },
+  { id: 'tracarLetras', nome: 'Traçar letras', dificuldade: 'Fácil' },
+  { id: 'tracarNumeros', nome: 'Traçar números', dificuldade: 'Fácil' },
+  { id: 'pontoAponto', nome: 'Ponto a ponto', dificuldade: 'Médio' }
+];
+
+function iconeAtividade(id) {
+  const partes = {
+    colorir: '<path d="M4 20 L4 16 L15 5 L19 9 L8 20 Z"/><path d="M13 7 L17 11"/>',
+    sombras: '<circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6" fill="currentColor" stroke="none"/>',
+    memoria: '<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M8,8 L20,20 M8,16 L20,4"/>',
+    contar: '<rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1.2" fill="currentColor" stroke="none"/><circle cx="15" cy="15" r="1.2" fill="currentColor" stroke="none"/>',
+    labirinto: '<rect x="3" y="3" width="18" height="18"/><path d="M3,9 L15,9 L15,15 L21,15"/>',
+    tracarLetras: '<path d="M12,4 L6,20 M12,4 L18,20 M8,14 L16,14"/>',
+    tracarNumeros: '<path d="M9,7 L12,4 L12,20"/>',
+    pontoAponto: '<circle cx="6" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="10" r="1.5" fill="currentColor" stroke="none"/><circle cx="18" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="9" cy="18" r="1.5" fill="currentColor" stroke="none"/>'
+  };
+  return `<svg class="icone-cat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${partes[id]}</svg>`;
+}
+
+let favAtividades = store.get('acomp.favAtividades', []);
+
+function renderizarGridAtividades() {
+  const grid = document.getElementById('gridAtividades');
+  grid.innerHTML = '';
+  ATIVIDADES.forEach(a => {
+    const favorita = favAtividades.includes(a.id);
+    const card = document.createElement('div');
+    card.className = 'card-atividade';
+    card.innerHTML = `
+      <button class="btn-favorito" aria-label="Favoritar" type="button">${iconeCoracao(favorita, '#16A34A')}</button>
+      <div class="cabecalho">
+        ${iconeAtividade(a.id)}
+        <div>
+          <h3>${a.nome}</h3>
+          <div class="dificuldade">${a.dificuldade}</div>
+        </div>
+      </div>
+    `;
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.btn-favorito')) return;
+      abrirAtividade(a.id);
+    });
+    card.querySelector('.btn-favorito').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const idx = favAtividades.indexOf(a.id);
+      if (idx >= 0) favAtividades.splice(idx, 1); else favAtividades.push(a.id);
+      store.set('acomp.favAtividades', favAtividades);
+      renderizarGridAtividades();
+    });
+    grid.appendChild(card);
+  });
+}
+
+/* ===== Atividades: abrir / voltar / imprimir ===== */
+const viewGrade = document.getElementById('viewGradeAtividades');
+const viewFolha = document.getElementById('viewFolhaAtividade');
+const controlesFolha = document.getElementById('controlesFolha');
+const folhaCabecalho = document.getElementById('folhaCabecalho');
+const folhaCorpo = document.getElementById('folhaCorpo');
+
+const RENDERIZADORES_ATIVIDADE = {
+  colorir: montarColorir,
+  sombras: montarSombras,
+  memoria: montarMemoria,
+  contar: montarContar,
+  labirinto: montarLabirinto,
+  tracarLetras: montarTracarLetras,
+  tracarNumeros: montarTracarNumeros,
+  pontoAponto: montarPontoAponto
+};
+
+function abrirAtividade(id) {
+  const atividade = ATIVIDADES.find(a => a.id === id);
+  folhaCabecalho.textContent = atividade.nome;
+  viewGrade.style.display = 'none';
+  viewFolha.style.display = 'block';
+  RENDERIZADORES_ATIVIDADE[id]();
+}
+
+document.getElementById('btnVoltarAtividade').addEventListener('click', () => {
+  viewFolha.style.display = 'none';
+  viewGrade.style.display = 'block';
+});
+document.getElementById('btnImprimir').addEventListener('click', () => window.print());
+
+/* ===== Atividade: colorir ===== */
+function montarColorir() {
+  let figuraAtual = 'casa';
+  controlesFolha.innerHTML = `
+    <select id="selFigura">${Object.entries(FIGURAS_NOMES).map(([id, nome]) => `<option value="${id}">${nome}</option>`).join('')}</select>
+  `;
+  function desenhar() {
+    folhaCorpo.innerHTML = `<div class="area-colorir">${svgFigura(figuraAtual, 'contorno')}</div>`;
+  }
+  document.getElementById('selFigura').addEventListener('change', (e) => { figuraAtual = e.target.value; desenhar(); });
+  desenhar();
+}
+
+/* ===== Atividade: sombras ===== */
+function montarSombras() {
+  controlesFolha.innerHTML = `<button id="btnNovoSombras" type="button">Gerar novo</button>`;
+  function desenhar() {
+    const chaves = Object.keys(FIGURAS_BASE);
+    const escolhidas = [...chaves].sort(() => Math.random() - 0.5).slice(0, 3);
+    const direita = [...escolhidas].sort(() => Math.random() - 0.5);
+    const letras = ['A', 'B', 'C'];
+    const esquerdaHTML = escolhidas.map((f, i) => `
+      <div class="item-sombra"><div class="figura-sombra">${svgFigura(f, 'contorno')}</div><div class="letra-sombra">${letras[i]}</div></div>
+    `).join('');
+    const direitaHTML = direita.map(f => `
+      <div class="item-sombra"><div class="letra-sombra">?</div><div class="figura-sombra">${svgFigura(f, 'silhueta')}</div></div>
+    `).join('');
+    folhaCorpo.innerHTML = `<div class="colunas-sombra"><div class="coluna-sombra">${esquerdaHTML}</div><div class="coluna-sombra">${direitaHTML}</div></div>`;
+  }
+  document.getElementById('btnNovoSombras').addEventListener('click', desenhar);
+  desenhar();
+}
+
+/* ===== Atividade: memória ===== */
+function montarMemoria() {
+  controlesFolha.innerHTML = `<button id="btnNovoMemoria" type="button">Gerar novo</button>`;
+  function desenhar() {
+    const chaves = Object.keys(FIGURAS_BASE);
+    const cartas = [...chaves, ...chaves].sort(() => Math.random() - 0.5);
+    const html = cartas.map(f => `<div class="carta-memoria">${svgFigura(f, 'contorno')}</div>`).join('');
+    folhaCorpo.innerHTML = `<div class="grade-memoria">${html}</div>`;
+  }
+  document.getElementById('btnNovoMemoria').addEventListener('click', desenhar);
+  desenhar();
+}
+
+/* ===== Atividade: contar e colorir ===== */
+function montarContar() {
+  controlesFolha.innerHTML = `<button id="btnNovoContar" type="button">Gerar novo</button>`;
+  function desenhar() {
+    const chaves = Object.keys(FIGURAS_BASE);
+    const escolhidas = [...chaves].sort(() => Math.random() - 0.5).slice(0, 5);
+    const linhas = escolhidas.map((f, i) => {
+      const n = i + 1;
+      let reps = '';
+      for (let k = 0; k < n; k++) reps += `<div class="figura-contar">${svgFigura(f, 'contorno')}</div>`;
+      return `<div class="linha-contar"><div class="repeticoes-contar">${reps}</div><div class="caixa-numero"></div></div>`;
+    }).join('');
+    folhaCorpo.innerHTML = `<div class="lista-contar">${linhas}</div>`;
+  }
+  document.getElementById('btnNovoContar').addEventListener('click', desenhar);
+  desenhar();
+}
+
+/* ===== Atividade: labirinto ===== */
+function gerarLabirinto(n) {
+  const grade = [];
+  for (let y = 0; y < n; y++) {
+    grade.push([]);
+    for (let x = 0; x < n; x++) grade[y].push({ n: true, s: true, l: true, o: true, visitado: false });
+  }
+  const pilha = [[0, 0]];
+  grade[0][0].visitado = true;
+  const opostos = { n: 's', s: 'n', l: 'o', o: 'l' };
+  while (pilha.length) {
+    const [x, y] = pilha[pilha.length - 1];
+    const vizinhos = [];
+    if (y > 0 && !grade[y - 1][x].visitado) vizinhos.push(['n', x, y - 1]);
+    if (y < n - 1 && !grade[y + 1][x].visitado) vizinhos.push(['s', x, y + 1]);
+    if (x > 0 && !grade[y][x - 1].visitado) vizinhos.push(['o', x - 1, y]);
+    if (x < n - 1 && !grade[y][x + 1].visitado) vizinhos.push(['l', x + 1, y]);
+    if (vizinhos.length === 0) { pilha.pop(); continue; }
+    const [dir, nx, ny] = vizinhos[Math.floor(Math.random() * vizinhos.length)];
+    grade[y][x][dir] = false;
+    grade[ny][nx][opostos[dir]] = false;
+    grade[ny][nx].visitado = true;
+    pilha.push([nx, ny]);
+  }
+  return grade;
+}
+function svgLabirinto(grade, n) {
+  const tam = n * 30;
+  let linhas = '';
+  for (let y = 0; y < n; y++) {
+    for (let x = 0; x < n; x++) {
+      const c = grade[y][x];
+      const x0 = x * 30, y0 = y * 30, x1 = x0 + 30, y1 = y0 + 30;
+      if (c.n && !(x === 0 && y === 0)) linhas += `<line x1="${x0}" y1="${y0}" x2="${x1}" y2="${y0}"/>`;
+      if (c.s && !(x === n - 1 && y === n - 1)) linhas += `<line x1="${x0}" y1="${y1}" x2="${x1}" y2="${y1}"/>`;
+      if (c.o) linhas += `<line x1="${x0}" y1="${y0}" x2="${x0}" y2="${y1}"/>`;
+      if (c.l) linhas += `<line x1="${x1}" y1="${y0}" x2="${x1}" y2="${y1}"/>`;
+    }
+  }
+  return `<svg viewBox="-16 -14 ${tam + 32} ${tam + 40}" stroke="#000" stroke-width="2" stroke-linecap="square">
+    <text x="-14" y="-4" font-size="9">Entrada</text>
+    <text x="${tam - 24}" y="${tam + 24}" font-size="9">Saída</text>
+    ${linhas}
+  </svg>`;
+}
+function montarLabirinto() {
+  let dificuldade = 'facil';
+  controlesFolha.innerHTML = `
+    <select id="selDificuldadeLab">
+      <option value="facil">Fácil 8x8</option>
+      <option value="medio">Médio 12x12</option>
+    </select>
+    <button id="btnNovoLabirinto" type="button">Gerar novo labirinto</button>
+  `;
+  function desenhar() {
+    const n = dificuldade === 'facil' ? 8 : 12;
+    const grade = gerarLabirinto(n);
+    folhaCorpo.innerHTML = `<div class="area-labirinto">${svgLabirinto(grade, n)}</div>`;
+  }
+  document.getElementById('selDificuldadeLab').addEventListener('change', (e) => { dificuldade = e.target.value; desenhar(); });
+  document.getElementById('btnNovoLabirinto').addEventListener('click', desenhar);
+  desenhar();
+}
+
+/* ===== Atividade: traçar letras e números ===== */
+function folhaTraco(caractere) {
+  let celulas = '';
+  for (let i = 0; i < 8; i++) {
+    const classe = i < 4 ? 'letra-contorno' : 'letra-fantasma';
+    celulas += `<div class="linha-pautada"><span class="letra-grande ${classe}">${caractere}</span></div>`;
+  }
+  return `<div class="grade-traco">${celulas}</div>`;
+}
+function montarTracarLetras() {
+  const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZÇ'.split('');
+  controlesFolha.innerHTML = `<select id="selLetra">${letras.map(l => `<option value="${l}">${l}</option>`).join('')}</select>`;
+  function desenhar() { folhaCorpo.innerHTML = folhaTraco(document.getElementById('selLetra').value); }
+  document.getElementById('selLetra').addEventListener('change', desenhar);
+  desenhar();
+}
+function montarTracarNumeros() {
+  const numeros = '0123456789'.split('');
+  controlesFolha.innerHTML = `<select id="selNumero">${numeros.map(n => `<option value="${n}">${n}</option>`).join('')}</select>`;
+  function desenhar() { folhaCorpo.innerHTML = folhaTraco(document.getElementById('selNumero').value); }
+  document.getElementById('selNumero').addEventListener('change', desenhar);
+  desenhar();
+}
+
+/* ===== Atividade: ponto a ponto ===== */
+function gerarPontosEstrela(cx, cy, pontas, rOut, rIn) {
+  const pontos = [];
+  const passo = Math.PI / pontas;
+  for (let i = 0; i < pontas * 2; i++) {
+    const r = i % 2 === 0 ? rOut : rIn;
+    const ang = -Math.PI / 2 + i * passo;
+    pontos.push([+(cx + r * Math.cos(ang)).toFixed(1), +(cy + r * Math.sin(ang)).toFixed(1)]);
+  }
+  return pontos;
+}
+const PONTOS_FIGURAS = {
+  estrela: gerarPontosEstrela(50, 50, 6, 42, 18),
+  barco: [[10,84],[90,84],[78,64],[68,64],[68,54],[52,54],[52,64],[35,14],[48,10],[35,20],[35,64],[22,64]],
+  casa: [[15,90],[35,90],[35,72],[50,72],[50,90],[85,90],[85,55],[50,20],[15,55],[15,65],[28,65],[28,78],[15,78]],
+  peixe: [[10,50],[25,35],[45,28],[65,32],[80,15],[68,50],[80,85],[65,68],[45,72],[38,80],[30,72],[25,65]]
+};
+const FIGURAS_PONTO_NOMES = { estrela: 'Estrela', barco: 'Barco', casa: 'Casa', peixe: 'Peixe' };
+function svgPontoAPonto(pontos) {
+  const els = pontos.map((p, i) => `<circle cx="${p[0]}" cy="${p[1]}" r="2.2" fill="#000"/><text x="${p[0] + 3}" y="${p[1] - 3}" font-size="6">${i + 1}</text>`).join('');
+  return `<svg viewBox="0 0 100 100">${els}</svg>`;
+}
+function montarPontoAponto() {
+  controlesFolha.innerHTML = `<select id="selFiguraPonto">${Object.entries(FIGURAS_PONTO_NOMES).map(([id, nome]) => `<option value="${id}">${nome}</option>`).join('')}</select>`;
+  function desenhar() {
+    folhaCorpo.innerHTML = `<div class="area-ponto-a-ponto">${svgPontoAPonto(PONTOS_FIGURAS[document.getElementById('selFiguraPonto').value])}</div>`;
+  }
+  document.getElementById('selFiguraPonto').addEventListener('change', desenhar);
+  desenhar();
+}
+
+renderizarGridAtividades();
+</script>
+</body>
+</html>
